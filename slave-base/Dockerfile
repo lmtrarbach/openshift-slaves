@@ -14,6 +14,8 @@ RUN yum install -y centos-release-scl-rh && \
     # the requisit folks to get that addressed ... will switch back to rpm -V $INSTALL_PKGS when that occurs
     rpm -V bc gettext git lsof rsync tar unzip which zip bzip2  && \
     yum clean all && \
+    rpm -ivh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm && \
+    yum -y install puppet-agent && \
     mkdir -p /home/jenkins && \
     chown -R 1001:0 /home/jenkins && \
     chmod -R g+w /home/jenkins && \
@@ -24,33 +26,9 @@ RUN yum install -y centos-release-scl-rh && \
     chmod 775 /usr/bin && \
     chmod 775 /usr/lib/jvm-exports && \
     chmod 775 /usr/share/man/man1 && \
-    chmod 775 /var/lib/origin && \    
-    unlink /usr/bin/java && \
-    unlink /usr/bin/jjs && \
-    unlink /usr/bin/keytool && \
-    unlink /usr/bin/orbd && \
-    unlink /usr/bin/pack200 && \
-    unlink /usr/bin/policytool && \
-    unlink /usr/bin/rmid && \
-    unlink /usr/bin/rmiregistry && \
-    unlink /usr/bin/servertool && \
-    unlink /usr/bin/tnameserv && \
-    unlink /usr/bin/unpack200 && \
-    unlink /usr/lib/jvm-exports/jre && \
-    unlink /usr/share/man/man1/java.1.gz && \
-    unlink /usr/share/man/man1/jjs.1.gz && \
-    unlink /usr/share/man/man1/keytool.1.gz && \
-    unlink /usr/share/man/man1/orbd.1.gz && \
-    unlink /usr/share/man/man1/pack200.1.gz && \
-    unlink /usr/share/man/man1/policytool.1.gz && \
-    unlink /usr/share/man/man1/rmid.1.gz && \
-    unlink /usr/share/man/man1/rmiregistry.1.gz && \
-    unlink /usr/share/man/man1/servertool.1.gz && \
-    unlink /usr/share/man/man1/tnameserv.1.gz && \
-    unlink /usr/share/man/man1/unpack200.1.gz
-
+    chmod 775 /var/lib/origin 
 # Copy the entrypoint
 ADD contrib/bin/* /usr/local/bin/
-
+RUN /usr/local/bin/run-jnlp-client
 # Run the Jenkins JNLP client
-ENTRYPOINT ["/usr/local/bin/run-jnlp-client"]
+RUN puppet agent
